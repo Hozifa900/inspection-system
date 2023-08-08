@@ -14,10 +14,12 @@ public class WebSecurityConfiguration extends ResourceServerConfigurerAdapter {
     @Override
     public void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
+//                .cors().and()
                 .csrf()
                 .disable()
                 .authorizeRequests()
-                .antMatchers("/**").permitAll()
+                .antMatchers("/api/admin/**").hasRole("ADMIN")
+                .antMatchers("/h2-console/*").permitAll()
                 .anyRequest().authenticated();
         httpSecurity.headers().frameOptions().disable();
     }

@@ -1,12 +1,11 @@
 package edu.miu.inspection.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
 
@@ -14,15 +13,18 @@ import java.util.Collection;
 public class User implements UserDetails {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotNull
+    @Column(unique = true)
     private String email;
     @NotNull
+    @JsonIgnore
     private String password;
     @NotNull
     private String authorities;
     @NotNull
+    @JsonIgnore
     private Boolean enabled = false;
     @NotNull
     private String firstName;
@@ -32,6 +34,7 @@ public class User implements UserDetails {
     private String phone;
     @NotNull
     private String location;
+    private boolean deleted;
 
     public Long getId() {
         return id;
@@ -95,6 +98,14 @@ public class User implements UserDetails {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 
     @Override
