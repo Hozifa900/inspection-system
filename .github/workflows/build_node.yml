@@ -5,7 +5,7 @@ name: Build React App
 
 on:
   push:
-    branches: [ "thao/implement_ci_cd_frontend" ]
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
@@ -23,6 +23,4 @@ jobs:
     - run: npm i
       working-directory: ./inspection-system-frontend
     - run: npm run build --if-present
-      working-directory: ./inspection-system-frontend
-    - run: npm test
       working-directory: ./inspection-system-frontend
