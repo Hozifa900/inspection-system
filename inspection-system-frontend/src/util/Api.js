@@ -8,7 +8,7 @@ if (token != null) {
 }
 
 export const api = axios.create({
-    baseURL: "http://localhost:8080",
+    baseURL: "https://inspection-system.thearaseng.com",
     headers: {
         "Content-Type": "application/json",
         "Authorization": authorization,
@@ -16,7 +16,7 @@ export const api = axios.create({
 })
 
 export const authApi = axios.create({
-    baseURL: "http://localhost:8080",
+    baseURL: "https://inspection-system.thearaseng.com",
     headers: {
         "Content-Type": "application/x-www-form-urlencoded",
         "Authorization": "Basic bXlDbGllbnQ6bXlDbGllbnRTZWNyZXQ=",
