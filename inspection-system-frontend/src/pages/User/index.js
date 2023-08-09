@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Button, Col, Form, message, Modal, Row, Space, Table, Tag} from "antd";
 import Header from "../../components/Header/Header";
 import CreateUser from "./components/CreateUser";
@@ -13,9 +13,11 @@ const User = (props)=> {
     const [submitAdd, setSubmitAdd] = useState(false);
     const [addForm] = Form.useForm();
     const [dataSource, setDataSource] = useState([]);
-    const [pagination, setPagination] = useState({
-        current: 1,
-        pageSize: 10, // You can adjust the initial page size
+    const [tableParams, setTableParams] = useState({
+        pagination: {
+            current: 1,
+            pageSize: 1,
+        },
     });
 
     const [isFetch, setIsFetch] = useState(false);
@@ -63,7 +65,7 @@ const User = (props)=> {
             render: (_, { roles }) => (
                 <>
                     {roles.map((role) => {
-                        return <Tag color={statusColors[role]}>
+                        return <Tag key={role} color={statusColors[role]}>
                             {role}
                         </Tag>
                     })}
@@ -122,36 +124,53 @@ const User = (props)=> {
         setIsFetch(false);
     };
 
-    const fetchData = useCallback(() => {
+    const fetchData = () => {
         props.getUsers(
-            { page: pagination.current - 1, pageSize: pagination.pageSize },
+            { page: tableParams.pagination.current - 1, pageSize: tableParams.pagination.pageSize },
             (code, res) => handleResult(code, res)
         );
         const handleResult = (code, res) => {
             if (code === 200) {
                 console.log(res);
                 setDataSource(res.content);
+                setTableParams({
+                    ...tableParams,
+                    pagination: {
+                        ...tableParams.pagination,
+                        total: res.totalElements,
+                        // 200 is mock data, you should read it from server
+                        // total: data.totalCount,
+                    },
+                });
             } else {
                 console.log(code);
                 message.error("Error when getting domain information!");
             }
         };
-    },[])
+    }
 
     useEffect(() => {
        if (isFetch) {
            fetchData()
        }
+        // eslint-disable-next-line
     }, [isFetch])
-
     useEffect(() => {
-        console.log('i fire once');
-        fetchData(); // Fetch data on initial render
-    }, []);
+        fetchData();
+        // eslint-disable-next-line
+    }, [JSON.stringify(tableParams)]);
 
-    const handleTableChange = (pagination) => {
-        setPagination(pagination);
-        fetchData(); // Fetch data when pagination changes
+    const handleTableChange = (pagination, filters, sorter) => {
+        setTableParams({
+            pagination,
+            filters,
+            ...sorter,
+        });
+
+        // `dataSource` is useless since `pageSize` changed
+        if (pagination.pageSize !== tableParams.pagination?.pageSize) {
+            setDataSource([]);
+        }
     };
 
     const confirmDelete = (record) => {
@@ -249,7 +268,7 @@ const User = (props)=> {
                         key="table"
                         columns={columns}
                         dataSource={dataSource}
-                        pagination={pagination}
+                        pagination={tableParams.pagination}
                         onChange={handleTableChange}
                         rowKey="id"
                         style={{
